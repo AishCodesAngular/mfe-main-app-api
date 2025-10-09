@@ -1,0 +1,90 @@
+<div class="container">
+  <header class="header">
+    <h1>{{title}}</h1>
+    <div class="controls">
+      <button class="btn btn-primary" (click)="loadMfe('user')" [disabled]="isDisableMFELoad" [ngStyle]="!isDisableMFELoad ? {'cursor' : 'pointer'} : {'cursor' : 'default', 'opacity': '0.5', 'pointer-events': 'none'}">
+        Load User Management MFE 
+      </button>
+      <button (click)="sendMessageToMFE()" class="btn btn-primary" [disabled]="isSendMessageToMFE" [ngStyle]="isDisableMFELoad ? {'cursor' : 'pointer'} : {'opacity': '0.5', 'pointer-events': 'none'}">
+        Send Message to MFE
+      </button>
+      <select class="theme-selector" (change)="selectMFEApp($any($event.target).value)" [disabled]="isSendMessageToMFE">
+        <option value="user">Please Select MFE</option>
+        <option value="user">User</option>
+        <option value="test">Test</option>
+      </select>
+      <select (change)="updateTheme($any($event.target).value)" class="theme-selector" [disabled]="isSendMessageToMFE">
+        <option value="light">Light Theme</option>
+        <option value="dark">Dark Theme</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="mfe-section">
+      <h2>Micro Frontend Components</h2>
+      
+      <!-- MFE Component 1 - User Management -->
+      <div class="mfe-container">
+        @if(isEdit) {
+        <h3 style="display: inline-block; text-align: right; color:rgb(61, 7, 209); 
+        cursor: pointer; float: right; padding: 5px 18px 5px 18px; border: solid 1px #00000021; border-radius: 10px;" 
+        (click)="loadMfe('test')"><i class="fa fa-edit" style="font-size:18px;color:rgb(61, 7, 209)"></i> Edit</h3>
+        }
+        <h3><span class="first-upper">{{selectedApp}}</span> CRUD MFE</h3>
+        @if(isEdit) {
+          <div class="forGridDiv">
+            <div class="div1">Firstname:</div>
+            <div class="div2">
+              
+                {{updatedValue.firstName}}
+              
+            </div>
+            <div class="div3">LastName:</div>
+            <div class="div4">
+             
+                {{updatedValue.lastName}}
+            </div>
+            <div class="div5">Gender:</div>
+            <div class="div6">
+            
+                {{updatedValue.gender}}
+
+            </div>
+            <div class="div7">DOB:</div>
+            <div class="div8">
+               
+                {{updatedValue.dob}}
+            </div>
+        </div>
+        }
+          
+            <div #mfeContainer style="position: relative;"> 
+        </div>
+          
+      </div>
+      
+
+      <!-- MFE Component 2 - Analytics Dashboard -->
+      <!-- <div class="mfe-container">
+        <h3>Analytics Dashboard MFE</h3> -->
+        <!-- <analytics-dashboard-mfe></analytics-dashboard-mfe> -->
+      <!-- </div> -->
+    </section>
+
+    <aside class="message-log">
+      <h3>Message Bus Log</h3>
+      <button (click)="clearMessages()" class="btn btn-secondary">Clear</button>
+      <div class="messages">
+        <div *ngFor="let message of messages" class="message" [ngClass]="'from-' + message.source">
+          <div class="message-header">
+            <span class="message-type">{{message.type}}</span>
+            <span class="message-source">from {{message.source}}</span>
+            <span class="message-time">{{message.timeString}}</span>
+          </div>
+          <div class="message-payload">{{message.payload | json}}</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
