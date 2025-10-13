@@ -24,6 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
   updatedValue :any = {firstName:"Jason",lastName:"Gillespie",gender:"Male",dob:"19/04/1975"};
   notUpdated: boolean = true;
   storedData:any;
+  private destroy$ = new Subject<void>();
+
 
 
   constructor(
@@ -54,7 +56,8 @@ export class AppComponent implements OnInit, OnDestroy {
       if(event.type === 'TEST_USER_UPDATED') {
          this.isEdit = true;
          this.notUpdated = false;
-         this.updatedValue = this.storedData;
+         this.updatedValue = event.payload.user;
+         this.submitForm(event.payload.user);
          this.unloadMfe()
       }
       this.cdr.detectChanges();
@@ -221,5 +224,60 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log(value);
     this.selectedApp = value;
     this.loadMfe(value);
+  }
+
+
+  saveFormData(formValue:any) {
+   let tempForm = formValue;
+    this.apiService
+      .saveUserData(tempForm)
+      .pipe(
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (savedData) => {
+          console.log('form submitted successfully!',savedData);
+        },
+        error: (error) => {
+          console.error("Error submitting form:", error);
+        },
+      });
+}
+
+updateFormData(formValue:any) {
+   let tempForm = formValue;
+    this.apiService
+      .updateUserData(tempForm, 1)
+      .pipe(
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (savedData) => {
+          console.log('form submitted successfully!',savedData);
+        },
+        error: (error) => {
+          console.error("Error submitting form:", error);
+        },
+      });
+}
+
+
+ private submitForm(formValue:any): void {
+    this.apiService
+      .checkIfFormExists()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          console.log(response);
+          if (response.length > 0) {
+            this.updateFormData(formValue);
+          } else {
+            this.saveFormData(formValue);
+          }
+        },
+        error: (error) => {
+          console.error("Error loading saved form state:", error);
+        },
+      });
   }
 }

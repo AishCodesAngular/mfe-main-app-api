@@ -17,5 +17,17 @@ export class ApiService {
     return this._http.get<User>(`${this.baseURL}/submitForm/${id}`);
   }
 
+  saveUserData(userData: User): Observable<User> {
+    return this._http.post<User>(`${this.baseURL}/submitForm`, userData);
+  }
+
+  checkIfFormExists(): Observable<User | null> {
+    return this._http.get<User>(`${this.baseURL}/submitForm`);
+  }
+
+  updateUserData(userData: User, id:any): Observable<User> {
+    return this._http.put<User>(`${this.baseURL}/submitForm` + `/${id}`, userData)
+  }
+
 }
 
