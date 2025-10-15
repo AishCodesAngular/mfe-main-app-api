@@ -21,10 +21,11 @@ export class AppComponent implements OnInit, OnDestroy {
   selectedApp: string = 'test';
   isEdit: boolean = true;
   toggleMFE: boolean = true;
-  updatedValue :any = {firstName:"Jason",lastName:"Gillespie",gender:"Male",dob:"19/04/1975"};
+  updatedValue :any = {firstName:"Jason",lastName:"Gillespie",gender:"Male",dob:"2025-10-22"};
   notUpdated: boolean = true;
   storedData:any;
   private destroy$ = new Subject<void>();
+  public errorMsg:any;
 
 
 
@@ -54,12 +55,27 @@ export class AppComponent implements OnInit, OnDestroy {
         this.messages = this.messages.slice(0, 10);
       }
       if(event.type === 'TEST_USER_UPDATED') {
-         this.isEdit = true;
-         this.notUpdated = false;
-         this.updatedValue = event.payload.user;
+        //  this.isEdit = true;
+        //  this.notUpdated = false;
+        //  this.updatedValue = event.payload.user; // putting this on success of API
          this.submitForm(event.payload.user);
-         this.unloadMfe()
       }
+
+       if(event.type === 'API_SUCCESS') {
+        this.errorMsg = null;
+        this.updatedValue = event.payload.user; // putting this on success of API
+        this.storedData = event.payload.user;
+         this.isEdit = true;
+         this.unloadMfe()
+
+      }
+
+       if(event.type === 'API_FAILURE') {
+        this.errorMsg = 'API Failed. Please try again.';
+        this.updatedValue = null; // putting this on success of API
+         this.isEdit = false;
+      }
+
       this.cdr.detectChanges();
     });
 
@@ -73,7 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if(event.payload.requestId === 'test-user-list') {
         this.messageBus.emit('DATA_RESPONSE', {
         requestId: event.payload.requestId,
-        data: this.storedData
+        data: this.storedData ? this.storedData : {firstName:"Jason",lastName:"Gillespie",gender:"Male",dob:"2025-10-22"}
       });
       } else {
         // Respond to data requests from MFEs
@@ -103,29 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
     };
   }
 
-  // private getTestUserData() {
-    
-    // const storedData = localStorage.getItem('formSubmit');
-    // let parsedData = null;
-
-    // if (storedData) {
-    //   try {
-    //     parsedData = JSON.parse(storedData);
-    //   } catch (error) {
-    //     console.error('❌ Error parsing formSubmit data from API:', error);
-    //   }
-    // } else {
-    //   return {
-    //     testUser: {firstName:"Jason",lastName:"Gillespie",gender:"Male",dob:"19/04/1975"}
-    //   }
-    //   // console.warn('⚠️ No formSubmit data found in localStorage');
-    // }
-
-    // return {
-    //   testUser: parsedData
-    // };
-  // }
-
+  
   getUserDataFromAPI() {
    const obs$ = this.apiService.getUserData(1);
   console.log('Returned from API service:', obs$); // should log "Observable"
@@ -135,11 +129,7 @@ export class AppComponent implements OnInit, OnDestroy {
       next: (response: any) => {
         console.log('response',response);
         this.storedData = response;
-         this.isEdit = true;
-         this.notUpdated = false;
          this.updatedValue = this.storedData;
-        //  this.testUser
-         this.unloadMfe()
       },
       error: (error:any) => console.error("Error loading saved form state:", error),
     });
@@ -237,9 +227,19 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (savedData) => {
           console.log('form submitted successfully!',savedData);
+           this.messageBus.emit(
+            'API_SUCCESS',
+            { user: savedData },
+            'mfe'
+          );
         },
         error: (error) => {
           console.error("Error submitting form:", error);
+           this.messageBus.emit(
+            'API_FAILURE',
+            { user: null },
+            'mfe'
+          );
         },
       });
 }
@@ -254,9 +254,20 @@ updateFormData(formValue:any) {
       .subscribe({
         next: (savedData) => {
           console.log('form submitted successfully!',savedData);
+           this.messageBus.emit(
+            'API_SUCCESS',
+            { user: savedData },
+            'mfe'
+          );
+
         },
         error: (error) => {
           console.error("Error submitting form:", error);
+           this.messageBus.emit(
+            'API_FAILURE',
+            { user: null },
+            'mfe'
+          );
         },
       });
 }
