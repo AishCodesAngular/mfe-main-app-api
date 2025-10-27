@@ -25,54 +25,25 @@
       <h2>Micro Frontend Components</h2>
       
       <!-- MFE Component 1 - User Management -->
-      <div class="mfe-container">
-        @if(isEdit) {
-        <h3 style="display: inline-block; text-align: right; color:rgb(61, 7, 209); 
-        cursor: pointer; float: right; padding: 5px 18px 5px 18px; border: solid 1px #00000021; border-radius: 10px;" 
-        (click)="loadMfe('test')"><i class="fa fa-edit" style="font-size:18px;color:rgb(61, 7, 209)"></i> Edit</h3>
-        }
-        <h3><span class="first-upper">{{selectedApp}}</span> CRUD MFE</h3>
-        @if(isEdit) {
-          <div class="forGridDiv">
-            <div class="div1">Firstname:</div>
-            <div class="div2">
-              
-                {{updatedValue.firstName}}
-              
-            </div>
-            <div class="div3">LastName:</div>
-            <div class="div4">
-             
-                {{updatedValue.lastName}}
-            </div>
-            <div class="div5">Gender:</div>
-            <div class="div6">
-            
-                {{updatedValue.gender}}
 
-            </div>
-            <div class="div7">DOB:</div>
-            <div class="div8">
-               
-                {{updatedValue.dob}}
-            </div>
-        </div>
-        }
-         <div style="color: red; margin-bottom: 20px;">{{errorMsg}}</div>
-          
-            <div #mfeContainer style="position: relative;"> 
+     <!-- <div class="mfe-container">
+      <div #mfeContainer style="min-height: 150px;"></div>
+    </div> -->
 
-           
-        </div>
-          
-      </div>
+    <div class="mfe-container">
+       <div style="min-height: 150px;">
+         <first-management-mfe></first-management-mfe>
+       </div>
+    </div>
+
+    <div class="mfe-container">
+       <div style="min-height: 150px;">
+        <second-management-mfe></second-management-mfe>
+       </div>
+    </div>
       
 
-      <!-- MFE Component 2 - Analytics Dashboard -->
-      <!-- <div class="mfe-container">
-        <h3>Analytics Dashboard MFE</h3> -->
-        <!-- <analytics-dashboard-mfe></analytics-dashboard-mfe> -->
-      <!-- </div> -->
+    
     </section>
 
     <aside class="message-log">
